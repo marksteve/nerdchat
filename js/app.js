@@ -20,7 +20,7 @@ function pushMsg(d) {
 }
 
 function system(m) {
-  pushMsg({username: 'NerdChat', type: 'chat', message: m});
+  pushMsg({username: 'NerdChat', type: 'system', message: m});
 }
 
 function manage(conn) {
@@ -76,16 +76,31 @@ function render() {
     })
 
   var message = li.append('div').classed('message', true);
+  var d = li.datum();
 
-  if (li.datum().type == 'chat') {
-    message.text(function(d) {
-      return d.message;
-    });
-  } else {
-    message.html(function(d) {
-      return '<pre><code data-language="python">' + d.message + '</code></pre>';
-    });
-    Rainbow.color(message.node());
+  switch (d.type) {
+    case 'code':
+      message.html(function(d) {
+        return '<pre><code data-language="python">' + d.message + '</code></pre>';
+      });
+      Rainbow.color(message.node());
+      break;
+    case 'system':
+      if (typeof d.message == 'string') {
+        message.html(function(d) {
+          return d.message;
+        });
+      } else {
+        message.append(function(d) {
+          return d.message;
+        });
+      }
+      break;
+    default:
+      message.text(function(d) {
+        return d.message;
+      });
+      break;
   }
 
   messages.property('scrollTop', messages.property('scrollHeight'));
@@ -121,7 +136,11 @@ peer.on('open', function(id) {
     system("Joining " + id + "...");
     manage(peer.connect(id));
   } else {
-    system("Make people go to " + location.origin + location.pathname + "#" + id + " to chat with you!");
+    var url = location.origin + location.pathname + "#" + id;
+    system("Make people go to " + url + " to chat with you!");
+    var qr = document.createElement('div');
+    new QRCode(qr, {text: url, width: 128, height: 128});
+    system(qr);
     peer.on('connection', manage);
   }
 });
