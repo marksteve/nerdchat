@@ -1,0 +1,93 @@
+* {
+  box-sizing: border-box;
+}
+body, button, pre, code {
+  font: 16px/1.5 Inconsolata;
+}
+body {
+  padding: 1.5em 3em;
+}
+pre {
+  margin: 0;
+}
+.hide {
+  display: none;
+}
+.messages {
+  overflow-y: auto;
+  position: absolute;
+  top: 6em;
+  left: 3em;
+  right: 3em;
+}
+.chat .messages {
+  bottom: 7.5em;
+}
+.code .messages {
+  bottom: 16em;
+}
+.messages ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.messages li {
+  clear: both;
+  margin-bottom: 0.5em;
+}
+.messages li .username {
+  float: left;
+  width: 8em;
+}
+.messages li .message {
+  margin-left: 10em;
+  position: relative;
+}
+.messages li .message .run {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+}
+.input {
+  position: absolute;
+  bottom: 4.5em;
+  left: 3em;
+  right: 3em;
+  clear: both;
+}
+.input .message,
+.input .toggle {
+  float: left;
+}
+.input .message {
+  padding-right: 1em;
+  width: 90%;
+}
+.input .toggle {
+  width: 10%;
+}
+.input .message input,
+.input .message .editor,
+.toggle button {
+  border: 2px solid;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  width: 100%;
+}
+.input .message input,
+.toggle button {
+  height: 2em;
+}
+.input .message input,
+.input .message .editor {
+  padding: 0 0.5em;
+}
+.toggle button {
+  background: white;
+  font-weight: bold;
+}
+.input .message .editor {
+  font-size: 16px;
+  height: 10em;
+}
