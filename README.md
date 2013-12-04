@@ -18,6 +18,6 @@ It's dead simple to use:
 The button beside the input box toggles chat and code mode. When in code mode, press shift + enter to send.
 
 Right now only python is supported for syntax highlighting but it's trivial to add others.
-I think this is perfect for quick code explanations and tech interviews. Source is at github: https://github.com/marksteve/nerdchat
+I think this is perfect for quick code explanations and tech interviews.
 
 Note: Uses PeerJS so it will only work if you browser supports it (latest Chrome and Firefox should do)
