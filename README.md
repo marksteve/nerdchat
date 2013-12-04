@@ -3,7 +3,6 @@ NerdChat
 
 P2P chat with syntax highlighting built with PeerJS, D3, Rainbow and Ace.
 
-## Why
 
 While watching a coworker interview someone in Google hangouts, we thought that it would be nice if
 we can get syntax highlighting with chat to send quick code snippets. Then I thought, chat ain't
