@@ -1,5 +1,5 @@
 var username = prompt("What's your name?");
-var id = document.cookie.length > 0 ? document.cookie : null;
+var id = Cookies.get('nerdchat_id');
 var app = d3.select('.app');
 var messages = d3.select('.messages');
 var ip = d3.select('.input');
@@ -28,8 +28,8 @@ function manage(conn) {
     location.hash = conn.peer;
   }
 
-  if (document.cookie.length == 0) {
-    document.cookie = peer.id;
+  if (!id) {
+    Cookies.set('nerdchat_id', peer.id);
   }
 
   Mousetrap.bind('enter', function(e) {
