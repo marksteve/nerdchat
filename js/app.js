@@ -10,6 +10,7 @@ var tb = d3.select('.toggle button');
 var peer = new Peer(id, {key: '713xpomlnkjiqkt9'});
 var editor = ace.edit(ie.node());
 var ctx = {
+  conn: null,
   mode: 'chat',
   messages: array()
 };
@@ -24,6 +25,8 @@ function sys(m) {
 
 function manage(conn) {
 
+  ctx.conn = conn;
+
   if (location.hash.length == 0) {
     location.hash = conn.peer;
   }
@@ -31,43 +34,6 @@ function manage(conn) {
   if (!id) {
     Cookies.set('nerdchat_id', peer.id);
   }
-
-  Mousetrap.bind('enter', function(e) {
-    if (ctx.mode != 'chat') return;
-    var message = ii.node().value;
-    if (message.length > 0) {
-      var d = {
-        username: username,
-        type: 'chat',
-        message: message
-      };
-      pushMsg(d);
-      conn.send(d);
-    }
-    ii.node().value = '';
-  });
-  Mousetrap.bind('ctrl+m', function(e) { toggleMode() });
-
-  editor.commands.addCommand({
-    name: 'send',
-    bindKey: {win: 'Shift-Enter', mac: 'Shift-Enter'},
-    exec: function() {
-      var d = {
-        username: username,
-        type: 'code',
-        message: editor.getValue()
-      };
-      pushMsg(d);
-      conn.send(d);
-    }
-  });
-  editor.commands.addCommand({
-    name: 'toggleMode',
-    bindKey: {win: 'Ctrl-m', mac: 'Ctrl-m'},
-    exec: function() {
-      toggleMode();
-    }
-  });
 
   conn.on('open', function() {
     sys("Connected with " + conn.peer);
@@ -131,18 +97,56 @@ function toggleMode(mode) {
   else editor.focus();
 }
 
+Mousetrap.bind('enter', function(e) {
+  if (ctx.mode != 'chat') return;
+  var message = ii.node().value;
+  if (message.length > 0) {
+    var d = {
+      username: username,
+      type: 'chat',
+      message: message
+    };
+    pushMsg(d);
+    ctx.conn.send(d);
+  }
+  ii.node().value = '';
+});
+Mousetrap.bind('ctrl+m', function(e) { toggleMode() });
+
+editor.commands.addCommand({
+  name: 'send',
+  bindKey: {win: 'Ctrl-Enter', mac: 'Ctrl-Enter'},
+  exec: function() {
+    var d = {
+      username: username,
+      type: 'code',
+      message: editor.getValue()
+    };
+    pushMsg(d);
+    ctx.conn.send(d);
+  }
+});
+editor.commands.addCommand({
+  name: 'toggleMode',
+  bindKey: {win: 'Ctrl-m', mac: 'Ctrl-m'},
+  exec: function() {
+    toggleMode();
+  }
+});
+
 editor.setTheme('ace/theme/solarized_light');
 editor.getSession().setMode('ace/mode/python');
 ctx.messages.on('add', render);
 tb.on('click', toggleMode);
 
 peer.on('open', function(id) {
+  peer.on('connection', manage);
   if (location.hash.length > 0) {
     id = location.hash.substr(1);
     sys("Joining " + id + "...");
     manage(peer.connect(id));
   } else {
     sys("Make people go to <strong>" + location.origin + location.pathname + "#" + id + "</strong> to chat with you!");
-    peer.on('connection', manage);
   }
 });
+
