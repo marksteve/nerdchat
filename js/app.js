@@ -55,9 +55,9 @@ function manage(conn) {
 
   conn.on('open', function() {
     system("Connected with " + conn.peer);
-    ii.node().focus();
     toggleMode('chat');
     ip.classed('hide', false);
+    ii.node().focus();
   });
 
   conn.on('data', pushMsg);
