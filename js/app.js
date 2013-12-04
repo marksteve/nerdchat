@@ -1,4 +1,5 @@
 var username = prompt("What's your name?");
+var id = document.cookie.length > 0 ? document.cookie : null;
 var app = d3.select('.app');
 var messages = d3.select('.messages');
 var ip = d3.select('.input');
@@ -6,7 +7,7 @@ var ii = ip.select('.message input');
 var ie = ip.select('.message .editor');
 var mu = d3.select('.messages ul');
 var tb = d3.select('.toggle button');
-var peer = new Peer({key: '713xpomlnkjiqkt9'});
+var peer = new Peer(id, {key: '713xpomlnkjiqkt9'});
 var editor = ace.edit(ie.node());
 var ctx = {
   mode: 'chat',
@@ -17,11 +18,19 @@ function pushMsg(d) {
   ctx.messages.push(d);
 }
 
-function system(m) {
-  pushMsg({username: 'NerdChat', type: 'chat', message: m});
+function sys(m) {
+  pushMsg({username: 'NerdChat', type: 'sys', message: m});
 }
 
 function manage(conn) {
+
+  if (location.hash.length == 0) {
+    location.hash = conn.peer;
+  }
+
+  if (document.cookie.length == 0) {
+    document.cookie = peer.id;
+  }
 
   Mousetrap.bind('enter', function(e) {
     if (ctx.mode != 'chat') return;
@@ -37,6 +46,7 @@ function manage(conn) {
     }
     ii.node().value = '';
   });
+  Mousetrap.bind('ctrl+m', function(e) { toggleMode() });
 
   editor.commands.addCommand({
     name: 'send',
@@ -51,9 +61,16 @@ function manage(conn) {
       conn.send(d);
     }
   });
+  editor.commands.addCommand({
+    name: 'toggleMode',
+    bindKey: {win: 'Ctrl-m', mac: 'Ctrl-m'},
+    exec: function() {
+      toggleMode();
+    }
+  });
 
   conn.on('open', function() {
-    system("Connected with " + conn.peer);
+    sys("Connected with " + conn.peer);
     ip.classed('hide', false);
     toggleMode('chat');
   });
@@ -75,15 +92,24 @@ function render() {
 
   var message = li.append('div').classed('message', true);
 
-  if (li.datum().type == 'chat') {
-    message.text(function(d) {
-      return d.message;
-    });
-  } else {
-    message.html(function(d) {
-      return '<pre><code data-language="python">' + d.message + '</code></pre>';
-    });
-    Rainbow.color(message.node());
+  switch (li.datum().type) {
+    case 'sys':
+      message.html(function(d) {
+        return d.message;
+      });
+      break;
+    case 'code':
+      message.html(function(d) {
+        return '<pre><code data-language="python">' + d.message + '</code></pre>';
+      });
+      Rainbow.color(message.node());
+      break;
+    default:
+    case 'chat':
+      message.text(function(d) {
+        return d.message;
+      });
+      break;
   }
 
   messages.property('scrollTop', messages.property('scrollHeight'));
@@ -96,12 +122,13 @@ function toggleMode(mode) {
   } else {
     ctx.mode = ctx.mode == 'chat' ? 'code' : 'chat';
   }
-  tb.text(ctx.mode);
+  tb.text(ctx.mode + ' [ctrl+m]');
   ii.classed('hide', ctx.mode != 'chat');
   ie.classed('hide', ctx.mode != 'code');
   app.classed('chat', ctx.mode == 'chat');
   app.classed('code', ctx.mode == 'code');
   if (ctx.mode == 'chat') ii.node().focus();
+  else editor.focus();
 }
 
 editor.setTheme('ace/theme/solarized_light');
@@ -112,10 +139,10 @@ tb.on('click', toggleMode);
 peer.on('open', function(id) {
   if (location.hash.length > 0) {
     id = location.hash.substr(1);
-    system("Joining " + id + "...");
+    sys("Joining " + id + "...");
     manage(peer.connect(id));
   } else {
-    system("Make people go to " + location.origin + location.pathname + "#" + id + " to chat with you!");
+    sys("Make people go to <strong>" + location.origin + location.pathname + "#" + id + "</strong> to chat with you!");
     peer.on('connection', manage);
   }
 });
