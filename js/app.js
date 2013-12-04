@@ -1,5 +1,3 @@
-Mousetrap=function(a){var c=a.stopCallback,b=!0;a.stopCallback=function(a,d,e){return b?c(a,d,e):!0};a.pause=function(){b=!1};a.unpause=function(){b=!0};return a}(Mousetrap);
-
 var username = prompt("What's your name?");
 var app = d3.select('.app');
 var messages = d3.select('.messages');
@@ -26,6 +24,7 @@ function system(m) {
 function manage(conn) {
 
   Mousetrap.bind('enter', function(e) {
+    if (ctx.mode != 'chat') return;
     var message = ii.node().value;
     if (message.length > 0) {
       var d = {
@@ -55,9 +54,8 @@ function manage(conn) {
 
   conn.on('open', function() {
     system("Connected with " + conn.peer);
-    toggleMode('chat');
     ip.classed('hide', false);
-    ii.node().focus();
+    toggleMode('chat');
   });
 
   conn.on('data', pushMsg);
@@ -99,15 +97,11 @@ function toggleMode(mode) {
     ctx.mode = ctx.mode == 'chat' ? 'code' : 'chat';
   }
   tb.text(ctx.mode);
-  if (ctx.mode == 'chat') {
-    Mousetrap.unpause();
-  } else {
-    Mousetrap.pause();
-  }
   ii.classed('hide', ctx.mode != 'chat');
   ie.classed('hide', ctx.mode != 'code');
   app.classed('chat', ctx.mode == 'chat');
   app.classed('code', ctx.mode == 'code');
+  if (ctx.mode == 'chat') ii.node().focus();
 }
 
 editor.setTheme('ace/theme/solarized_light');
