@@ -121,7 +121,7 @@ peer.on('open', function(id) {
     system("Joining " + id + "...");
     manage(peer.connect(id));
   } else {
-    system("Make people go to " + location.origin + "/#" + id + " to chat with you!");
+    system("Make people go to " + location.origin + location.pathname + "#" + id + " to chat with you!");
     peer.on('connection', manage);
   }
 });
