@@ -3,7 +3,6 @@ NerdChat
 
 P2P chat with syntax highlighting built with PeerJS, D3, Rainbow and Ace.
 
-
 While watching a coworker interview someone in Google hangouts, we thought that it would be nice if
 we can get syntax highlighting with chat to send quick code snippets. Then I thought, chat ain't
 hard specially with WebRTC. Syntax highlighting is easier with the vast number of libraries available.
@@ -11,10 +10,10 @@ Code editing? Ace. A few hours later, nerdchat was born.
 
 It's dead simple to use:
 
-* Go to nerdchat.
-* Enter your name.
-* Share the link with your chatmate.
-* You're now nerdchatting!
+1. Go to NerdChat.
+2. Enter your name.
+3. Share the link with your chatmate.
+4. You're now nerdchatting!
 
 The button beside the input box toggles chat and code mode. When in code mode, press shift + enter to send.
 
